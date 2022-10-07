@@ -24,32 +24,21 @@ String Device::getReference(){
     return this->reference;
 };
 
-class Sensor : public Device {
-    private:
-        String variable;
+class Actuator : public Device {
     protected:
-        double measure;
+        int output;
     public:
-        Sensor(uint8_t id, String reference, String variable): Device(id, reference){
-            this->variable = variable;
+        Actuator(uint8_t id, String reference): Device(id, reference){
         };
-        virtual double getMeasure()=0;
-        String getVariable();
-};
-String Sensor::getVariable(){
-    return this->variable;
+        virtual void setOutput(int output, String units)=0;
 };
 
 class HMI : public Device {
     protected:
-        String variable_1;
-        String variable_2;
-        double measure_1;
-        double measure_2;
+        int output;
     public:
-        HMI(uint8_t id, String reference): Device(id, reference){
-        };
-        virtual void showVariables(String variable_1, double measure_1, String variable_2, double measure_2)=0;
+        HMI(uint8_t id, String reference): Device(id, reference){};
+        virtual void showVariable(String reference, int output, String units)=0;
         virtual void showVibrationsAlert()=0;
 };
 

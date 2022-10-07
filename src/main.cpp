@@ -1,40 +1,36 @@
 #include <Arduino.h>
-#include <BMP180T.h>
-#include <POT_PRESSURE.h>
-#include <VIBSENSOR.h>
-#include <LCD_I2C.h>
+#include <DC_MOTOR.h>
+#include <OLED_I2C.h>
 
-String var1="Temperature";
-String var2="Pressure";
-String var3="Vibrations";
+dcMotor fan = dcMotor(0X01, "AXIAL FAN", 5);
+dcMotor pump = dcMotor(0X02, "PUMP R134", 6);
+Oled_128x64 oled_screen= Oled_128x64(0X03, "Screen", 0x3C, 128, 64, &Wire, -1);
 
-BMP180 temperature_sensor = BMP180(1, "BMP180", var1);
-pressureSensor pressure_sensor = pressureSensor(2, "Potentiometer", var2);
-vibrationsSensor vibrations_sensor = vibrationsSensor(3, "Potentiometer", var3);
-LCD_16x2 LCD_screen = LCD_16x2(4, "Screen", 0x27, 16, 2);
-
-double tresholdVibrations=8;
+int element=1;
 unsigned long temp=millis();
 
 void setup()
 {
     Serial.begin(9600);
-    while (!Serial); // Wait until monitor serial begins
-    temperature_sensor.startSensor();
-    LCD_screen.init();
-    LCD_screen.backlight();
-    LCD_screen.clear();
+    fan.begin();
+    pump.begin();
+    oled_screen.start();
+    oled_screen.showVibrationsAlert();
+    delay(2000);
 }
 
 void loop()
-{
-    if ((millis()-temp)>=2500)
-    {
-        if (vibrations_sensor.alertDetection(tresholdVibrations)){
-            LCD_screen.showVibrationsAlert();
-        } else {
-            LCD_screen.showVariables(var1, temperature_sensor.getMeasure(), var2, pressure_sensor.getMeasure());
-        }
-    temp=millis();
-    }
+{  
+    if ((millis()-temp>2500)&&(element==0X01)){
+        oled_screen.showVariable(fan.getReference(), fan.getOutput(), fan.getUnits());
+        element=0X02;
+        temp=millis();
+    };
+    if ((millis()-temp>2500)&&(element==0X02)){
+        oled_screen.showVariable(pump.getReference(), pump.getOutput(), pump.getUnits());
+        element=0X01;
+        temp=millis();
+    };
+    fan.setOutput(200,"Hz");
+    pump.setOutput(100,"Hz");
 }
