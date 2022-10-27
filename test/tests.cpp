@@ -1,15 +1,15 @@
-/*
 #include <unity.h>
 #include <Arduino.h>
-#include <BMP180T.h>
-#include <POT_PRESSURE.h>
-#include <VIBSENSOR.h>
+#include <dc_motor.h>
+#include <oled_i2c.h>
 
 void testGetId(void) {
     uint8_t Id=0;
-    BMP180 temperature_sensor = BMP180(Id, "BMP180", "Temperature");
-    TEST_ASSERT_TRUE(temperature_sensor.getId()==Id);
+    dcMotor fan = dcMotor(Id, "AXIAL FAN", 13);
+    TEST_ASSERT_TRUE(fan.getId()==Id);
 }
+
+/*   
 void testGetReference(void) {
     String reference="exampleRef";
     BMP180 temperature_sensor = BMP180(9, reference, "Temperature");
