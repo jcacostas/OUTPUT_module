@@ -21,9 +21,9 @@ class dcMotor: public Actuator {
 void dcMotor::begin(){
     pinMode(this->pin,OUTPUT);
 };
-void dcMotor::setOutput(int output, String units){
-    this->output=constrain(output,100,255);
+void dcMotor::setOutput(int out, String units){
     this->units=units;
+    this->output=out;
     analogWrite(this->pin,this->output);
 };
 int dcMotor::getOutput(){
